@@ -1,0 +1,31 @@
+{
+  "name": "rocky-tracker-pwa",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:server": "node server.js",
+    "dev:app": "tauri dev",
+    "build:app": "tauri build",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --port 4173",
+    "lint": "echo 'Add ESLint later'",
+    "format": "echo 'Add Prettier later'"
+  },
+  "dependencies": {
+    "@mantine/core": "^8.2.7",
+    "@mantine/hooks": "^8.2.7",
+    "@mantine/notifications": "^8.2.7",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.2.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0"
+  }
+}
