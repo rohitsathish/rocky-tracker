@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { MantineProvider, createTheme } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
@@ -121,37 +121,16 @@ const theme = createTheme({
 const container = document.getElementById('root')!;
 createRoot(container).render(
   <React.StrictMode>
-    <Root />
+    <MantineRoot />
   </React.StrictMode>
 );
 
-function Root() {
-  const [colorScheme, setColorScheme] = useState<'light' | 'dark'>(() => {
-    const saved = (typeof localStorage !== 'undefined' && localStorage.getItem('rt_theme')) as
-      | 'light'
-      | 'dark'
-      | null;
-    return saved ?? 'light';
-  });
-
-  const toggleTheme = useMemo(
-    () =>
-      () => {
-        setColorScheme((prev) => {
-          const next = prev === 'dark' ? 'light' : 'dark';
-          try {
-            localStorage.setItem('rt_theme', next);
-          } catch {}
-          return next;
-        });
-      },
-    []
-  );
-
+function MantineRoot() {
   return (
-    <MantineProvider defaultColorScheme={colorScheme} forceColorScheme={colorScheme} theme={theme}>
+    <MantineProvider defaultColorScheme="dark" forceColorScheme="dark" theme={theme}>
       <Notifications position="top-right" />
-      <App colorScheme={colorScheme} onToggleColorScheme={toggleTheme} />
+      <App />
     </MantineProvider>
   );
 }
+

@@ -32,6 +32,16 @@ fn data_path<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> PathBuf {
     dir
 }
 
+fn log_path<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> PathBuf {
+    let mut dir = app
+        .path()
+        .app_data_dir()
+        .expect("failed to resolve app data dir");
+    let _ = fs::create_dir_all(&dir);
+    dir.push("debug.log");
+    dir
+}
+
 fn backups_dir<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> PathBuf {
     let mut dir = app
         .path()
@@ -172,9 +182,22 @@ fn save_data<R: tauri::Runtime>(app: tauri::AppHandle<R>, payload: serde_json::V
     Ok(())
 }
 
+#[tauri::command]
+fn append_log<R: tauri::Runtime>(app: tauri::AppHandle<R>, line: String) -> Result<(), String> {
+    let path = log_path(&app);
+    let mut f = fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&path)
+        .map_err(|e| e.to_string())?;
+    let ts = chrono::Local::now().format("%Y-%m-%d %H:%M:%S");
+    let record = format!("{} | {}\n", ts, line);
+    f.write_all(record.as_bytes()).map_err(|e| e.to_string())
+}
+
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![load_data, save_data])
+        .invoke_handler(tauri::generate_handler![load_data, save_data, append_log])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

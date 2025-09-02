@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Container, Title, Text } from '@mantine/core';
+import { Container, Text } from '@mantine/core';
 import AppHeader from './components/AppHeader';
 import SaveIndicator from './components/SaveIndicator';
 import { notifications } from '@mantine/notifications';
@@ -21,12 +21,7 @@ const useDebounced = <T,>(value: T, delay = 500) => {
   return debounced;
 };
 
-type Props = {
-  colorScheme: 'light' | 'dark';
-  onToggleColorScheme: () => void;
-};
-
-export default function App({ colorScheme, onToggleColorScheme }: Props) {
+export default function App() {
   const [status, setStatus] = useState<string>('Ready');
   const [tab, setTab] = useState<'diary' | 'goals'>('diary');
   const [data, setData] = useState<AppData>(() => createEmptyAppData());
@@ -34,15 +29,27 @@ export default function App({ colorScheme, onToggleColorScheme }: Props) {
   const debouncedData = useDebounced(data, 500);
   const saving = useRef(false);
 
+  // Debug helper
+  const log = (...a: unknown[]) => console.debug('[app]', ...a);
+
+  // Reflect immediate intent to save when data changes
+  useEffect(() => {
+    if (!saving.current) {
+      setStatus('Saving…');
+      log('data changed → Saving…', { days: data.days.length, goals: data.goals.length });
+    }
+  }, [data]);
+
   // Data persistence handled by Tauri (or localStorage fallback).
 
   useEffect(() => {
     // Try to load existing data from storage.
     (async () => {
       if (await hasFileHandle()) {
+        log('loading data…');
         const raw = await loadData<unknown>();
         const validated = raw ? validateAppData(raw) : undefined;
-        if (validated?.ok) setData(validated.data);
+        if (validated?.ok) { setData(validated.data); log('data loaded', { days: validated.data.days.length, goals: validated.data.goals.length }); }
         else {
           // Backward-compat: support old demo shape with a message only, otherwise init empty
           const demo = raw as DemoData | undefined;
@@ -61,25 +68,26 @@ export default function App({ colorScheme, onToggleColorScheme }: Props) {
   }, []);
 
   useEffect(() => {
-    // Autosave when content changes.
+    // Autosave when content changes (debounced payload).
+    // Skip autosave for initial empty data or if we're currently loading/saving
     (async () => {
       if (saving.current) return;
+      
+      // Don't save empty initial state
+      if (debouncedData.days.length === 0 && debouncedData.goals.length === 0) {
+        log('autosave skipped: empty data');
+        return;
+      }
+      
       saving.current = true;
       try {
+        log('autosave start', { bytes: JSON.stringify(debouncedData).length });
         await saveData(debouncedData);
         setStatus('Saved');
-        
-        // Show success notification (only occasionally to avoid spam)
-        if (Math.random() < 0.1) { // 10% chance to show notification
-          notifications.show({
-            title: 'Auto-saved ✅',
-            message: 'Your changes have been saved',
-            color: 'green',
-            autoClose: 2000,
-          });
-        }
+        log('autosave success');
       } catch (e) {
         setStatus('Error saving');
+        console.error('[app] autosave failed', e);
         notifications.show({
           title: 'Save failed ❌',
           message: 'Could not save your changes',
@@ -95,23 +103,20 @@ export default function App({ colorScheme, onToggleColorScheme }: Props) {
   useEffect(() => {
     const onBeforeUnload = (_e: BeforeUnloadEvent) => {
       // Best-effort final save via local API.
+      log('beforeunload: attempting final save');
       if (!saving.current) {
-        saveData(data).catch(() => {});
+        saveData(data).catch((e) => console.error('[app] final save failed', e));
       }
     };
     window.addEventListener('beforeunload', onBeforeUnload);
     return () => window.removeEventListener('beforeunload', onBeforeUnload);
   }, [data]);
 
-  // no-op
-
   return (
     <Container fluid p={0} h="100vh" style={{ display: 'flex', flexDirection: 'column' }}>
       <AppHeader
         tab={tab}
         setTab={(t) => setTab(t)}
-        colorScheme={colorScheme}
-        onToggleColorScheme={onToggleColorScheme}
         right={<SaveIndicator status={status} />}
       />
       <Container
