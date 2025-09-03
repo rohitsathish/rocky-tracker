@@ -5,7 +5,7 @@ import SaveIndicator from './components/SaveIndicator';
 import { notifications } from '@mantine/notifications';
 import { loadData, saveData, hasFileHandle } from './lib/storage';
 import DiaryView from './views/DiaryView';
-import GoalView from './views/GoalView';
+import HabitView from './views/HabitView';
 import { AppData, DayEntry, createEmptyAppData } from './lib/types';
 import { validateAppData } from './lib/validate';
 import { currentYear, clampToMinYear, MIN_YEAR } from './lib/dates';
@@ -23,7 +23,7 @@ const useDebounced = <T,>(value: T, delay = 500) => {
 
 export default function App() {
   const [status, setStatus] = useState<string>('Ready');
-  const [tab, setTab] = useState<'diary' | 'goals'>('diary');
+  const [tab, setTab] = useState<'diary' | 'habits'>('diary');
   const [data, setData] = useState<AppData>(() => createEmptyAppData());
   const [year, setYear] = useState<number>(() => clampToMinYear(currentYear()));
   const debouncedData = useDebounced(data, 500);
@@ -36,7 +36,7 @@ export default function App() {
   useEffect(() => {
     if (!saving.current) {
       setStatus('Saving…');
-      log('data changed → Saving…', { days: data.days.length, goals: data.goals.length });
+      log('data changed → Saving…', { days: data.days.length, habits: data.habits.length });
     }
   }, [data]);
 
@@ -49,7 +49,11 @@ export default function App() {
         log('loading data…');
         const raw = await loadData<unknown>();
         const validated = raw ? validateAppData(raw) : undefined;
-        if (validated?.ok) { setData(validated.data); log('data loaded', { days: validated.data.days.length, goals: validated.data.goals.length }); }
+        if (validated?.ok) { 
+          setData(validated.data); 
+          const meta = { days: validated.data.days.length, habits: validated.data.habits.length };
+          log('data loaded', meta);
+        }
         else {
           // Backward-compat: support old demo shape with a message only, otherwise init empty
           const demo = raw as DemoData | undefined;
@@ -74,7 +78,7 @@ export default function App() {
       if (saving.current) return;
       
       // Don't save empty initial state
-      if (debouncedData.days.length === 0 && debouncedData.goals.length === 0) {
+      if (debouncedData.days.length === 0 && debouncedData.habits.length === 0) {
         log('autosave skipped: empty data');
         return;
       }
@@ -105,7 +109,9 @@ export default function App() {
       // Best-effort final save via local API.
       log('beforeunload: attempting final save');
       if (!saving.current) {
-        saveData(data).catch((e) => console.error('[app] final save failed', e));
+        saveData(data)
+          .then(() => log('final save: ok'))
+          .catch((e) => { console.error('[app] final save failed', e); });
       }
     };
     window.addEventListener('beforeunload', onBeforeUnload);
@@ -126,7 +132,8 @@ export default function App() {
           flex: 1,
           minHeight: 0,
           backgroundColor: 'var(--bg-canvas)',
-          color: 'var(--text-primary)'
+          color: 'var(--text-primary)',
+          overflow: 'hidden' // Prevent this container from creating scrollbars
         }}
       >
         {tab === 'diary' ? (
@@ -138,7 +145,7 @@ export default function App() {
             minYear={MIN_YEAR}
           />
         ) : (
-          <GoalView
+          <HabitView
             year={year}
             setYear={setYear}
             data={data}

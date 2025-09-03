@@ -1,7 +1,7 @@
 // Rocky Tracker — Core Data Types (Schema v1)
 // Keep minimal and stable; runtime validation lives in validate.ts
 
-export type DayColor = 'red' | 'yellow' | 'green';
+export type DayColor = 'red' | 'yellow' | 'green' | 'neutral';
 
 // ISO date string in YYYY-MM-DD (local calendar day)
 export type DateKey = string;
@@ -15,19 +15,19 @@ export interface DayEntry {
   diaryEntry?: string;
   // Mood/summary color for the day
   color: DayColor;
-  // IDs of goals completed on this day (goals not listed are considered missed if active)
-  completedGoals?: string[];
+  // IDs of habits completed on this day (habits not listed are considered missed if active)
+  completedHabits?: string[];
   // Optional timestamps for future auditing
   createdAt?: string; // ISO datetime
   updatedAt?: string; // ISO datetime
 }
 
-export interface Goal {
-  id: string; // stable id (e.g., 'g_xxx')
+export interface Habit {
+  id: string; // stable id (e.g., 'h_xxx')
   title: string;
   // Appears on or after this local date
   startDate: DateKey;
-  // When set, goal stops appearing after this date and is considered archived
+  // When set, habit stops appearing after this date and is considered archived
   completedAt?: DateKey;
   // Optional description/notes
   description?: string;
@@ -39,12 +39,12 @@ export interface Goal {
 export interface AppDataV1 {
   version: 1;
   days: DayEntry[];
-  goals: Goal[];
+  habits: Habit[];
 }
 
 export type AppData = AppDataV1;
 
 export function createEmptyAppData(): AppData {
-  return { version: 1, days: [], goals: [] };
+  return { version: 1, days: [], habits: [] };
 }
 

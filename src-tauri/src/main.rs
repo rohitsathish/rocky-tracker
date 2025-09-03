@@ -21,8 +21,25 @@ struct RockyData {
 }
 
 fn data_path<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> PathBuf {
-    // Store under the OS app-data directory for packaged apps (and dev),
-    // matching project guidelines.
+    // In dev, optionally store JSON in the repo at ../data/rocky.json for easy inspection.
+    // Toggle via env `ROCKY_DATA_IN_REPO=1`. In release, always use app-data dir.
+    let use_repo = cfg!(debug_assertions)
+        && std::env::var("ROCKY_DATA_IN_REPO").map(|v| v == "1" || v.to_lowercase() == "true").unwrap_or(false);
+    if use_repo {
+        if let Ok(mut cwd) = std::env::current_dir() {
+            // Typical cwd during `tauri dev` is `<repo>/src-tauri`. If so, go up one.
+            if cwd.file_name().and_then(|s| s.to_str()) == Some("src-tauri") {
+                if let Some(parent) = cwd.parent() { cwd = parent.to_path_buf(); }
+            }
+            let mut data_dir = cwd.clone();
+            data_dir.push("data");
+            let _ = fs::create_dir_all(&data_dir);
+            data_dir.push("rocky.json");
+            return data_dir;
+        }
+    }
+
+    // Default: OS app-data directory
     let mut dir = app
         .path()
         .app_data_dir()
@@ -197,7 +214,7 @@ fn append_log<R: tauri::Runtime>(app: tauri::AppHandle<R>, line: String) -> Resu
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![load_data, save_data, append_log])
+        .invoke_handler(tauri::generate_handler![load_data, save_data])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

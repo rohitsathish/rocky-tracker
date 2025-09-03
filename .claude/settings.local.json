@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd:*)",
+      "Read(/mnt/c/Users/rohit/Documents/**)",
+      "Read(/mnt/c/Users/rohit/Documents/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

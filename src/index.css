@@ -1114,21 +1114,20 @@ button:focus-visible {
 }
 
 .diary-months-columns {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-8);
   padding: var(--space-8) var(--space-12) var(--space-16);
-  height: max-content;
-  /* grow to content so we get a horizontal scrollbar when needed */
-  width: max-content;
-  min-width: max-content;
+  width: 100%;
+  height: auto;
 }
 
 .month-col {
-  width: 240px; /* Denser columns */
+  width: auto;
   display: flex;
   flex-direction: column;
-  flex-shrink: 0; /* Prevent columns from shrinking */
   overflow: visible; /* Allow content to expand naturally */
+  min-width: 0;
 }
 
 .month-col .month-header {
@@ -1147,6 +1146,13 @@ button:focus-visible {
   font-size: 14px;
   line-height: 1.2;
   text-align: center;
+}
+
+/* Two-column layout inside each month */
+.month-col .month-days {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
 }
 
   .month-days {
@@ -2304,18 +2310,19 @@ button:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: var(--space-3);
-  /* Base neutral background for days with no state */
+  justify-content:center;
+    /* Base neutral background for days with no state */
   background: color-mix(in oklab, var(--bg-elevated) 20%, transparent);
   border: 1px solid transparent;
   border-radius: var(--radius-3);
   gap: var(--space-2);
+  padding: var(--space-1);
   transition: all 180ms cubic-bezier(0.23, 1, 0.320, 1);
   min-width: 40px;
   width: 100%;
   /* Make the badge fill the cell’s inner height while keeping compact base */
   flex: 1 1 auto;
+  box-sizing: border-box;
 }
 
 /* Completion states for day-badge-container */
@@ -2409,23 +2416,27 @@ button:focus-visible {
 .habit-dots-container {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 2px;
   width: 100%;
-  flex-shrink: 0;
   align-items: center;
   position: relative;
   z-index: 2;
   background: transparent;
+  /* border: 1px solid red; */
 }
 
 .habit-dots-row {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  /* justify-content: center; */
+  /* flex-shrink: 0; */
   gap: 4px;
   height: 8px;
-  padding: 2px 0;
+  padding: var(--space-1) var(--space-1);
   background: transparent;
-  /* border: 1px solid red; */
+  /* border: 1px solid green; */
 }
 
 .habit-dot {
@@ -2436,7 +2447,6 @@ button:focus-visible {
   cursor: default;
   pointer-events: none;
   transition: all 200ms cubic-bezier(0.23, 1, 0.320, 1);
-  background: var(--gray-400);
   flex-shrink: 0;
 }
 
@@ -2798,20 +2808,21 @@ button:focus-visible {
 }
 
 .new-habit-section {
-  border-bottom: 1px solid var(--border-subtle);
-  padding-bottom: var(--space-6);
+  /* header button now; no underline */
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .new-habit-button {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-6);
+  padding: var(--space-2) var(--space-5);
   background: var(--accent);
   color: var(--text-inverse);
   border-radius: var(--radius-3);
   border: none;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   transition: all 140ms ease;
 }
@@ -3016,4 +3027,26 @@ button:focus-visible {
 .habit-description {
   font-size: 13px;
   color: var(--text-secondary);
+}
+/* Small icon button for list actions */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-2);
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.icon-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.icon-btn svg {
+  width: 16px;
+  height: 16px;
 }

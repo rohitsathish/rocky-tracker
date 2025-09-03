@@ -1,11 +1,11 @@
 // Runtime validation and normalization for AppData (Schema v1)
 // No external deps; keep fast and small.
 
-import { AppData, AppDataV1, DayColor, DayEntry, Goal } from './types';
+import { AppData, AppDataV1, DayColor, DayEntry, Habit } from './types';
 
 export type ValidationResult<T> = { ok: true; data: T; warnings: string[] } | { ok: false; errors: string[] };
 
-const COLOR_SET: Record<string, true> = { red: true, yellow: true, green: true };
+const COLOR_SET: Record<string, true> = { red: true, yellow: true, green: true, neutral: true };
 
 export function isDayColor(x: unknown): x is DayColor {
   return typeof x === 'string' && !!COLOR_SET[x];
@@ -40,23 +40,23 @@ function uniqueStrings(arr: unknown): string[] {
   return out;
 }
 
-export function validateGoal(raw: unknown): ValidationResult<Goal> {
+export function validateHabit(raw: unknown): ValidationResult<Habit> {
   const errors: string[] = [];
   const obj = (raw ?? {}) as Record<string, unknown>;
 
   const id = typeof obj.id === 'string' && obj.id.trim() ? obj.id.trim() : '';
-  if (!id) errors.push('goal.id missing');
+  if (!id) errors.push('habit.id missing');
 
   const title = typeof obj.title === 'string' && obj.title.trim() ? obj.title.trim() : '';
-  if (!title) errors.push('goal.title missing');
+  if (!title) errors.push('habit.title missing');
 
   const startDate = obj.startDate;
-  if (!isDateKey(startDate)) errors.push('goal.startDate invalid');
+  if (!isDateKey(startDate)) errors.push('habit.startDate invalid');
 
   let completedAt: string | undefined;
   if (obj.completedAt != null) {
     if (isDateKey(obj.completedAt)) completedAt = obj.completedAt;
-    else errors.push('goal.completedAt invalid');
+    else errors.push('habit.completedAt invalid');
   }
 
   const description = typeof obj.description === 'string' ? obj.description : undefined;
@@ -72,7 +72,7 @@ export function validateGoal(raw: unknown): ValidationResult<Goal> {
   };
 }
 
-export function validateDay(raw: unknown, knownGoalIds?: Set<string>): ValidationResult<DayEntry> {
+export function validateDay(raw: unknown, knownHabitIds?: Set<string>): ValidationResult<DayEntry> {
   const errors: string[] = [];
   const warnings: string[] = [];
   const obj = (raw ?? {}) as Record<string, unknown>;
@@ -85,11 +85,11 @@ export function validateDay(raw: unknown, knownGoalIds?: Set<string>): Validatio
   const color = isDayColor(obj.color) ? (obj.color as DayColor) : 'yellow';
   if (!isDayColor(obj.color)) warnings.push('day.color normalized to yellow');
 
-  let completedGoals = uniqueStrings(obj.completedGoals);
-  if (knownGoalIds) {
-    const filtered = completedGoals.filter((g) => knownGoalIds.has(g));
-    if (filtered.length !== completedGoals.length) warnings.push('day.completedGoals contained unknown goal ids');
-    completedGoals = filtered;
+  let completedHabits = uniqueStrings(obj.completedHabits);
+  if (knownHabitIds) {
+    const filtered = completedHabits.filter((h) => knownHabitIds.has(h));
+    if (filtered.length !== completedHabits.length) warnings.push('day.completedHabits contained unknown habit ids');
+    completedHabits = filtered;
   }
 
   const createdAt = typeof obj.createdAt === 'string' ? obj.createdAt : undefined;
@@ -104,7 +104,7 @@ export function validateDay(raw: unknown, knownGoalIds?: Set<string>): Validatio
       text,
       diaryEntry,
       color,
-      completedGoals: completedGoals.length ? completedGoals : undefined,
+      completedHabits: completedHabits.length ? completedHabits : undefined,
       createdAt,
       updatedAt,
     },
@@ -120,29 +120,29 @@ export function validateAppData(raw: unknown): ValidationResult<AppData> {
   const version = (obj.version as number) ?? 1;
   if (version !== 1) warnings.push(`unexpected version ${String(version)}; parsed as v1`);
 
-  const rawGoals = Array.isArray(obj.goals) ? obj.goals : [];
-  const goals: Goal[] = [];
-  const goalErrors: string[] = [];
-  for (let i = 0; i < rawGoals.length; i++) {
-    const res = validateGoal(rawGoals[i]);
-    if (res.ok) goals.push(res.data);
-    else goalErrors.push(...res.errors.map((e) => `goals[${i}]: ${e}`));
+  const rawHabits = Array.isArray(obj.habits) ? obj.habits : [];
+  const habits: Habit[] = [];
+  const habitErrors: string[] = [];
+  for (let i = 0; i < rawHabits.length; i++) {
+    const res = validateHabit(rawHabits[i]);
+    if (res.ok) habits.push(res.data);
+    else habitErrors.push(...res.errors.map((e) => `habits[${i}]: ${e}`));
   }
-  if (goalErrors.length) errors.push(...goalErrors);
+  if (habitErrors.length) errors.push(...habitErrors);
 
   const idSet = new Set<string>();
-  for (const g of goals) {
-    if (idSet.has(g.id)) warnings.push(`duplicate goal.id ${g.id}; keeping first`);
-    idSet.add(g.id);
+  for (const h of habits) {
+    if (idSet.has(h.id)) warnings.push(`duplicate habit.id ${h.id}; keeping first`);
+    idSet.add(h.id);
   }
-  const knownGoalIds = new Set(idSet);
+  const knownHabitIds = new Set(idSet);
 
   const rawDays = Array.isArray(obj.days) ? obj.days : [];
   const days: DayEntry[] = [];
   const dayErrors: string[] = [];
   const byDate = new Map<string, DayEntry>();
   for (let i = 0; i < rawDays.length; i++) {
-    const res = validateDay(rawDays[i], knownGoalIds);
+    const res = validateDay(rawDays[i], knownHabitIds);
     if (!res.ok) {
       dayErrors.push(...res.errors.map((e) => `days[${i}]: ${e}`));
       continue;
@@ -161,6 +161,6 @@ export function validateAppData(raw: unknown): ValidationResult<AppData> {
   }
 
   if (errors.length) return { ok: false, errors };
-  const data: AppDataV1 = { version: 1, days, goals };
+  const data: AppDataV1 = { version: 1, days, habits };
   return { ok: true, data, warnings };
 }

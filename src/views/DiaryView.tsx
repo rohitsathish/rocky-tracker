@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Paper } from '@mantine/core';
 import type { AppData, DayEntry } from '../lib/types';
-import { currentYear, getYearMonthsClamped, MIN_DATE_KEY, todayKey } from '../lib/dates';
+import { currentYear, getYearMonthsClamped, MIN_DATE_KEY, todayKey, getYearProgress, getWeekNumber } from '../lib/dates';
 import { yearEntries, countColors } from '../lib/stats';
 import DiaryEntryModal from '../components/DiaryEntryModal';
 
@@ -20,6 +20,7 @@ export default function DiaryView({ year, setYear, data, setData, minYear }: Pro
   const [pastDateKey, setPastDateKey] = useState<string>(today);
   const months = useMemo(() => getYearMonthsClamped(year, MIN_DATE_KEY, todayKey()), [year]);
   const stats = useMemo(() => countColors(yearEntries(data, year)), [data, year]);
+  const yearProgress = useMemo(() => getYearProgress(year), [year]);
 
   const getDay = (date: string): DayEntry | undefined => data.days.find((d) => d.date === date);
   const upsertDay = (date: string, patch: Partial<DayEntry>) => {
@@ -30,7 +31,7 @@ export default function DiaryView({ year, setYear, data, setData, minYear }: Pro
         if (idx === -1)
           return [
             ...data.days,
-            { date, text: '', color: 'yellow', ...patch, updatedAt: new Date().toISOString() },
+            { date, text: '', color: 'neutral', ...patch, updatedAt: new Date().toISOString() },
           ];
         const next = data.days.slice();
         next[idx] = { ...next[idx], ...patch, updatedAt: new Date().toISOString() };
@@ -65,6 +66,19 @@ export default function DiaryView({ year, setYear, data, setData, minYear }: Pro
             </button>
           </div>
         </div>
+        <div className="toolbar-center">
+          {/* Year Progress Bar */}
+          <div className="year-progress-container">
+            <span className="year-progress-year">{year}</span>
+            <div className="year-progress-bar">
+              <div 
+                className="year-progress-fill" 
+                style={{ width: `${yearProgress}%` }}
+              />
+            </div>
+            <span className="year-progress-text">{Math.round(yearProgress)}% done</span>
+          </div>
+        </div>
         <div className="toolbar-right">
           <div className="stats-overview">
             <StatDot color="green" count={stats.green} />
@@ -87,26 +101,49 @@ export default function DiaryView({ year, setYear, data, setData, minYear }: Pro
                 const e = getDay(dateKey);
                 const hasText = (e?.text ?? '').trim().length > 0;
                 const isT = dateKey === today;
-                return hasText || isT; // always show today; otherwise only non-empty
+                const isPast = dateKey < today;
+                return hasText || isT || isPast; // show today, days with text, and all past days
               });
               return { ...month, visibleDays };
             })
             .filter((m) => m.visibleDays.length > 0)
+            .slice(-4)
             .map((month) => (
               <div className="month-col" key={month.month}>
                 <div className="month-header">
                   <h2 className="month-title text-title-small">{month.label}</h2>
                 </div>
                 <div className="month-days">
-                  {month.visibleDays.map((dateKey) => (
-                    <DiaryEntryCard
-                      key={dateKey}
-                      dateKey={dateKey}
-                      entry={getDay(dateKey)}
-                      onClick={() => handleEntryClick(dateKey)}
-                      isToday={dateKey === today}
-                    />
-                  ))}
+                  {month.visibleDays.flatMap((dateKey, idx) => {
+                    const [y, m, d] = dateKey.split('-').map((v) => parseInt(v, 10));
+                    const jsDate = new Date(y, m - 1, d);
+                    const isMonday = jsDate.getDay() === 1; // 1 = Monday
+                    const parts: JSX.Element[] = [];
+
+                    if (isMonday) {
+                      const weekNo = getWeekNumber(jsDate);
+                      parts.push(
+                        <div className="week-separator" key={`${dateKey}-sep`}>
+                          <div className="week-line" />
+                          <div className="week-indicator">
+                            <span className="week-text">W{weekNo}</span>
+                          </div>
+                          <div className="week-line" />
+                        </div>
+                      );
+                    }
+
+                    parts.push(
+                      <DiaryEntryCard
+                        key={dateKey}
+                        dateKey={dateKey}
+                        entry={getDay(dateKey)}
+                        onClick={() => handleEntryClick(dateKey)}
+                        isToday={dateKey === today}
+                      />
+                    );
+                    return parts;
+                  })}
                 </div>
               </div>
             ))}
@@ -169,13 +206,13 @@ function DiaryEntryCard({
   isToday: boolean;
 }) {
   const dayNum = parseInt(dateKey.split('-')[2], 10);
-  const color = entry?.color ?? 'yellow';
+  const color = entry?.color ?? (isToday ? 'neutral' : 'red');
   const text = entry?.text ?? '';
 
   // Parse date for better formatting
   const [year, month, day] = dateKey.split('-');
   const dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-  const weekday = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
+  const weekdayShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dateObj.getDay()];
 
   return (
     <Paper
@@ -188,13 +225,13 @@ function DiaryEntryCard({
       <div className="card-header micro">
         <div className="date-section compact">
           <div className="day-badge tiny">{dayNum}</div>
-          <div className="day-info">
-            <h3 className="day-name small text-semibold">{weekday}</h3>
-            {isToday && <span className="today-label text-caption">Today</span>}
-          </div>
+          {isToday && <span className="today-label text-caption">Today</span>}
         </div>
-        <div className="mood-indicator micro">
-          <div className={`mood-dot ${color}`} />
+        <div className="card-header-right">
+          <h3 className="day-name small text-semibold">{weekdayShort}</h3>
+          <div className="mood-indicator micro">
+            <div className={`mood-dot ${color}`} />
+          </div>
         </div>
       </div>
 

@@ -33,37 +33,13 @@ export async function loadData<T = RockyData>(): Promise<T | undefined> {
 
 export async function saveData<T = RockyData>(data: T): Promise<void> {
   const payload = data as unknown as object;
-  const size = (() => {
-    try { return JSON.stringify(payload).length; } catch { return -1; }
-  })();
-  
-  console.log('[storage] saveData called', {
-    isTauri: isTauri(),
-    hasWindow: typeof window !== 'undefined',
-    hasTauriGlobal: typeof window !== 'undefined' && !!window.__TAURI__,
-    tauriApi: typeof window !== 'undefined' ? window.__TAURI__ : 'no window',
-    size
-  });
   
   if (isTauri()) {
-    debug('saveData via Tauri invoke(save_data)', { bytes: size });
-    console.time('saveData(tauri)');
-    try {
-      console.log('[storage] About to invoke save_data...');
-      await invoke('save_data', { payload });
-      console.log('[storage] save_data invoke successful');
-      await invoke('append_log', { line: `save ok bytes=${size}` });
-      console.log('[storage] append_log invoke successful');
-    } catch (e) {
-      console.error('[storage] Tauri invoke failed:', e);
-      await invoke('append_log', { line: `save error ${String(e)}` }).catch(() => {});
-      throw e;
-    }
-    console.timeEnd('saveData(tauri)');
+    debug('saveData via Tauri invoke(save_data)');
+    await invoke('save_data', { payload });
     return;
   }
-  debug('saveData via localStorage', { bytes: size });
-  console.time('saveData(localStorage)');
+  
+  debug('saveData via localStorage');
   localStorage.setItem('rocky', JSON.stringify(payload));
-  console.timeEnd('saveData(localStorage)');
 }

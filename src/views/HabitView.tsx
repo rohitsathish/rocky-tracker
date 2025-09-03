@@ -182,6 +182,11 @@ export default function HabitView({ year, setYear, data, setData, minYear }: Pro
             setShowHabitModal(true);
             setShowHabitsManager(false);
           }}
+          onDeleteHabit={(habit: Habit) => {
+            if (confirm(`Delete habit "${habit.title}"?`)) {
+              deleteHabit(habit.id);
+            }
+          }}
           onNewHabit={() => {
             setEditingHabit(null);
             setShowHabitModal(true);
@@ -203,10 +208,18 @@ export default function HabitView({ year, setYear, data, setData, minYear }: Pro
             }
             setShowHabitModal(false);
             setEditingHabit(null);
+            setShowHabitsManager(true); // return to previous modal
           }}
           onCancel={() => {
             setShowHabitModal(false);
             setEditingHabit(null);
+            setShowHabitsManager(true); // return to previous modal
+          }}
+          onDelete={(habitId: string) => {
+            deleteHabit(habitId);
+            setShowHabitModal(false);
+            setEditingHabit(null);
+            setShowHabitsManager(true);
           }}
         />
       )}
@@ -399,6 +412,18 @@ function DayCell({
   const partialCompletion = activeHabitsForDay.length > 0 && completedCount > 0 && completedCount < activeHabitsForDay.length;
   const noneCompleted = activeHabitsForDay.length > 0 && completedCount === 0;
   const todayInitial = isToday && completedCount === 0; // show purple, hide dots
+
+    // Choose exactly one visual status class
+  const statusClass = todayInitial
+    ? 'today'
+    : allCompleted
+    ? 'all-done'
+    : partialCompletion
+    ? 'partial-completion'
+    : noneCompleted
+    ? 'none-completed'
+    : '';
+
   const completionPct = activeHabitsForDay.length > 0 ? Math.round((completedCount / activeHabitsForDay.length) * 100) : 0;
 
   if (isFuture && activeHabitsForDay.length === 0) {
@@ -420,23 +445,23 @@ function DayCell({
 
   return (
     <div 
-      className={`day-cell ${todayInitial ? 'today' : ''} ${allCompleted ? 'all-done' : ''} ${partialCompletion ? 'partial-completion' : ''} ${noneCompleted ? 'none-completed' : ''} ${isFuture ? 'future' : ''}`}
+      className={`day-cell ${statusClass} ${isFuture ? 'future' : ''}`}
       onClick={() => onDayClick && activeHabitsForDay.length > 0 && onDayClick(dateKey)}
       style={{ cursor: activeHabitsForDay.length > 0 ? 'pointer' : 'default' }}
     >
       <div 
-        className={`day-cell-inner ${todayInitial ? 'today' : ''} ${allCompleted ? 'all-done' : ''} ${partialCompletion ? 'partial-completion' : ''} ${noneCompleted ? 'none-completed' : ''} ${isFuture ? 'future' : ''}`}
+        className={`day-cell-inner ${statusClass} ${isFuture ? 'future' : ''}`}
         style={{ 
           '--dot-rows': todayInitial ? 0 : Math.ceil(activeHabitsForDay.length / 3)
         } as React.CSSProperties}
       >
         {/* Single container with grey background that holds both day number and dots */}
-        <div className={`day-badge-container ${todayInitial ? 'today' : ''} ${allCompleted ? 'all-done' : ''} ${partialCompletion ? 'partial-completion' : ''} ${noneCompleted ? 'none-completed' : ''}`}>
+        <div className={`day-badge-container ${statusClass}`}>
           <div className="day-number">{dayNum}</div>
           
           {activeHabitsForDay.length > 0 && !todayInitial && (
             <div className="habit-dots-container">
-              {Array.from({ length: Math.ceil(maxHabitsInWeek / 3) }, (_, rowIndex) => (
+              {Array.from({ length: Math.ceil(activeHabitsForDay.length / 3) }, (_, rowIndex) => (
                 <div key={rowIndex} className="habit-dots-row">
                   {activeHabitsForDay
                     .slice(rowIndex * 3, (rowIndex + 1) * 3)
@@ -447,22 +472,6 @@ function DayCell({
                         title={`${habit.title}: ${completedHabits.includes(habit.id) ? 'Completed' : 'Not completed'}`}
                       />
                     ))}
-                  {/* Fill empty slots in this row to maintain alignment */}
-                  {Array.from({ 
-                    length: 3 - activeHabitsForDay.slice(rowIndex * 3, (rowIndex + 1) * 3).length 
-                  }, (_, emptyIndex) => (
-                    <div key={`empty-${emptyIndex}`} style={{ width: '7px', height: '7px' }} />
-                  ))}
-                </div>
-              ))}
-              {/* Fill empty rows to maintain uniform height across the week */}
-              {Array.from({ 
-                length: Math.max(0, Math.ceil(maxHabitsInWeek / 3) - Math.ceil(activeHabitsForDay.length / 3))
-              }, (_, emptyRowIndex) => (
-                <div key={`empty-row-${emptyRowIndex}`} className="habit-dots-row">
-                  {Array.from({ length: 3 }, (_, emptyDotIndex) => (
-                    <div key={`empty-dot-${emptyDotIndex}`} style={{ width: '7px', height: '7px' }} />
-                  ))}
                 </div>
               ))}
             </div>
@@ -476,11 +485,13 @@ function DayCell({
 function HabitModal({ 
   habit, 
   onSave, 
-  onCancel 
+  onCancel, 
+  onDelete 
 }: { 
   habit: Habit | null;
   onSave: (habit: Omit<Habit, 'id' | 'createdAt' | 'updatedAt'>) => void;
   onCancel: () => void;
+  onDelete?: (habitId: string) => void;
 }) {
   const [title, setTitle] = useState(habit?.title || '');
   const [description, setDescription] = useState(habit?.description || '');
@@ -498,7 +509,11 @@ function HabitModal({
 
   return (
     <div className="modal-overlay" onClick={onCancel}>
-      <div className="habit-modal-redesign" onClick={(e) => e.stopPropagation()}>
+      <div className="habit-modal-redesign" onClick={(e) => e.stopPropagation()} style={{ position: 'relative' }}>
+        {/* Top-right close replaces Cancel */}
+        <button onClick={onCancel} className="close-button" style={{ position: 'absolute', top: 12, right: 12 }} aria-label="Close">
+          ×
+        </button>
         {/* Date-style Preview */}
         <div className="date-preview-section">
           <div className="date-circle-large">
@@ -547,10 +562,12 @@ function HabitModal({
         </div>
 
         {/* Footer */}
-        <div className="modal-footer-clean">
-          <button onClick={onCancel} className="cancel-button-clean">
-            Cancel
-          </button>
+        <div className="modal-footer-clean" style={{ display: 'flex', justifyContent: 'space-between' }}>
+          {habit && onDelete && (
+            <button onClick={() => onDelete(habit.id)} className="cancel-button-clean" style={{ color: 'var(--red)' }}>
+              Delete
+            </button>
+          )}
           <button onClick={handleSave} className="save-button-clean" disabled={!title.trim()}>
             {habit ? 'Update Habit' : 'Create Habit'}
           </button>
@@ -635,6 +652,7 @@ function HabitsManagerModal({
   showArchivedHabits,
   setShowArchivedHabits,
   onEditHabit,
+  onDeleteHabit,
   onNewHabit,
   onClose
 }: {
@@ -643,29 +661,32 @@ function HabitsManagerModal({
   showArchivedHabits: boolean;
   setShowArchivedHabits: (show: boolean) => void;
   onEditHabit: (habit: Habit) => void;
+  onDeleteHabit: (habit: Habit) => void;
   onNewHabit: () => void;
   onClose: () => void;
 }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="habits-manager-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="date-preview-section">
-          <div className="date-circle-large">
-            <HabitIcon />
+        <div className="date-preview-section" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div className="date-circle-large">
+              <HabitIcon />
+            </div>
+            <div className="date-details">
+              <h3 className="weekday-large">Manage Habits</h3>
+              <p className="full-date-large">Create, edit, and organize your habits</p>
+            </div>
           </div>
-          <div className="date-details">
-            <h3 className="weekday-large">Manage Habits</h3>
-            <p className="full-date-large">Create, edit, and organize your habits</p>
-          </div>
-        </div>
-
-        <div className="diary-content-section">
-          {/* New Habit Button */}
           <div className="new-habit-section">
             <button className="new-habit-button" onClick={onNewHabit}>
               <PlusIcon /> New Habit
             </button>
           </div>
+        </div>
+
+        <div className="diary-content-section">
+          {/* New Habit Button moved to header */}
 
           {/* Current Habits */}
           <div className="habits-section">
@@ -677,15 +698,22 @@ function HabitsManagerModal({
             ) : (
               <div className="habits-list">
                 {currentHabits.map(habit => (
-                  <div key={habit.id} className="habit-item" onClick={() => onEditHabit(habit)}>
-                    <div className="habit-info">
+                  <div key={habit.id} className="habit-item">
+                    <div className="habit-info" onClick={() => onEditHabit(habit)}>
                       <div className="habit-name">{habit.title}</div>
                       <div className="habit-details">
                         Started: {new Date(habit.startDate).toLocaleDateString()}
                         {habit.description && <span> • {habit.description}</span>}
                       </div>
                     </div>
-                    <EditIcon />
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button className="icon-btn" title="Edit" onClick={() => onEditHabit(habit)}>
+                        <EditIcon />
+                      </button>
+                      <button className="icon-btn" title="Delete" onClick={() => onDeleteHabit(habit)}>
+                        <TrashIcon />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -710,15 +738,22 @@ function HabitsManagerModal({
                   </div>
                 ) : (
                   archivedHabits.map(habit => (
-                    <div key={habit.id} className="habit-item archived" onClick={() => onEditHabit(habit)}>
-                      <div className="habit-info">
+                    <div key={habit.id} className="habit-item archived">
+                      <div className="habit-info" onClick={() => onEditHabit(habit)}>
                         <div className="habit-name">{habit.title}</div>
                         <div className="habit-details">
                           {habit.startDate} - {habit.completedAt}
                           {habit.description && <span> • {habit.description}</span>}
                         </div>
                       </div>
-                      <EditIcon />
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button className="icon-btn" title="Edit" onClick={() => onEditHabit(habit)}>
+                          <EditIcon />
+                        </button>
+                        <button className="icon-btn" title="Delete" onClick={() => onDeleteHabit(habit)}>
+                          <TrashIcon />
+                        </button>
+                      </div>
                     </div>
                   ))
                 )}

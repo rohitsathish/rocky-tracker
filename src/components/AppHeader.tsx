@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type TabKey = 'diary' | 'goals';
+export type TabKey = 'diary' | 'habits';
 
 type Props = {
   tab: TabKey;
@@ -29,11 +29,11 @@ export default function AppHeader({ tab, setTab, right }: Props) {
           </button>
           <button
             role="tab"
-            aria-selected={tab === 'goals'}
-            className={`tab-btn ${tab === 'goals' ? 'active' : ''}`}
-            onClick={() => setTab('goals')}
+            aria-selected={tab === 'habits'}
+            className={`tab-btn ${tab === 'habits' ? 'active' : ''}`}
+            onClick={() => setTab('habits')}
           >
-            Goals
+            Habits
           </button>
         </div>
       </div>
