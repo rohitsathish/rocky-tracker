@@ -1,3 +1,5 @@
+/* (moved) Habit View layout rules integrated below in Habit View section */
+
 /* Rocky Tracker - Dense-Soft Design System */
 
 /* IBM Plex Sans Font Loading - Robust Strategy */
@@ -14,6 +16,7 @@
   /* Layout constants */
   --app-header-h: 64px;
   --diary-toolbar-h: 48px;
+  --habit-toolbar-h: 48px;
   --chrome-bg: rgba(28, 28, 30, 0.8);
   --chrome-border: rgba(255, 255, 255, 0.1);
 
@@ -95,6 +98,9 @@
   --green: #10B981;
   --green-light: rgba(16, 185, 129, 0.1);
   --green-bg: #ECFDF5;
+  --neutral: #64748B;
+  --neutral-light: rgba(100, 116, 139, 0.1);
+  --neutral-bg: #F8FAFC;
   
   /* Micro-shadows - extremely subtle depth for dense-soft feel */
   --shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.01);
@@ -289,6 +295,11 @@ input, textarea, select, button {
   font-family: var(--font-system) !important;
 }
 
+/* Ensure Mantine containers don't create unwanted scrollbars */
+.mantine-Container-root {
+  overflow: visible !important;
+}
+
 /* Enhanced Mantine component styling */
 .mantine-SegmentedControl-root {
   background: var(--bg-translucent) !important;
@@ -328,12 +339,14 @@ input, textarea, select, button {
 
 /* Ensure diary cards (Mantine Paper) can set their own background */
 .mantine-Paper-root.diary-card { background: var(--bg-surface) !important; }
-.mantine-Paper-root.diary-card.c-red { background: color-mix(in oklab, #EF4444 12%, var(--bg-surface)) !important; border-color: rgba(239,68,68,0.25) !important; }
-.mantine-Paper-root.diary-card.c-yellow { background: color-mix(in oklab, #F59E0B 12%, var(--bg-surface)) !important; border-color: rgba(245,158,11,0.25) !important; }
-.mantine-Paper-root.diary-card.c-green { background: color-mix(in oklab, #10B981 12%, var(--bg-surface)) !important; border-color: rgba(16,185,129,0.25) !important; }
-.mantine-Paper-root.diary-card.c-red:hover { background: color-mix(in oklab, #EF4444 18%, var(--bg-surface)) !important; border-color: rgba(239,68,68,0.4) !important; }
-.mantine-Paper-root.diary-card.c-yellow:hover { background: color-mix(in oklab, #F59E0B 18%, var(--bg-surface)) !important; border-color: rgba(245,158,11,0.4) !important; }
-.mantine-Paper-root.diary-card.c-green:hover { background: color-mix(in oklab, #10B981 18%, var(--bg-surface)) !important; border-color: rgba(16,185,129,0.4) !important; }
+.mantine-Paper-root.diary-card.c-red { background: color-mix(in oklab, #EF4444 16%, var(--bg-surface)) !important; border-color: rgba(239,68,68,0.35) !important; }
+.mantine-Paper-root.diary-card.c-yellow { background: color-mix(in oklab, #F59E0B 16%, var(--bg-surface)) !important; border-color: rgba(245,158,11,0.35) !important; }
+.mantine-Paper-root.diary-card.c-green { background: color-mix(in oklab, #10B981 16%, var(--bg-surface)) !important; border-color: rgba(16,185,129,0.35) !important; }
+.mantine-Paper-root.diary-card.c-neutral { background: color-mix(in oklab, var(--neutral) 8%, var(--bg-surface)) !important; border-color: rgba(100,116,139,0.2) !important; }
+.mantine-Paper-root.diary-card.c-red:hover { background: color-mix(in oklab, #EF4444 22%, var(--bg-surface)) !important; border-color: rgba(239,68,68,0.5) !important; }
+.mantine-Paper-root.diary-card.c-yellow:hover { background: color-mix(in oklab, #F59E0B 22%, var(--bg-surface)) !important; border-color: rgba(245,158,11,0.5) !important; }
+.mantine-Paper-root.diary-card.c-green:hover { background: color-mix(in oklab, #10B981 22%, var(--bg-surface)) !important; border-color: rgba(16,185,129,0.5) !important; }
+.mantine-Paper-root.diary-card.c-neutral:hover { background: color-mix(in oklab, var(--neutral) 12%, var(--bg-surface)) !important; border-color: rgba(100,116,139,0.3) !important; }
 
 /* Today with no text: purple wash */
 .mantine-Paper-root.diary-card.is-today:not(:has(.entry-preview)) {
@@ -739,6 +752,203 @@ button:focus-visible {
   transform: translateY(-1px);
 }
 
+/* Past Day Modal Redesign - Dense-Soft Functional Minimalism */
+.past-day-modal-redesign {
+  display: flex;
+  flex-direction: column;
+  min-height: auto;
+}
+
+/* Diary Entry Modal Redesign - Matching Past Day Modal Style */
+.diary-entry-modal-redesign {
+  display: flex;
+  flex-direction: column;
+  min-height: 500px;
+}
+
+.mood-selector-section {
+  padding: var(--space-10);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.diary-content-section {
+  padding: var(--space-10);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.input-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.input-hint {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin: 0;
+}
+
+.auto-save-info {
+  flex: 1;
+}
+
+.auto-save-info .range-text {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.modal-action-section {
+  padding: var(--space-8) var(--space-10) var(--space-10);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.modal-header-clean {
+  padding: var(--space-10) var(--space-10) var(--space-8);
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-4);
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.header-content h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.header-content p {
+  margin: var(--space-1) 0 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.date-preview-section {
+  padding: var(--space-10);
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  background: var(--bg-muted);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.date-circle-large {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-6);
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  flex-shrink: 0;
+}
+
+.day-number-large {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.date-details {
+  flex: 1;
+}
+
+.weekday-large {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.full-date-large {
+  margin: var(--space-2) 0 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.date-error {
+  margin: var(--space-2) 0 0;
+  font-size: 13px;
+  color: var(--red);
+  font-weight: 500;
+}
+
+.date-selectors-section {
+  padding: var(--space-10);
+  display: grid;
+  grid-template-columns: 1fr auto 100px;
+  gap: var(--space-6);
+  align-items: end;
+}
+
+.selector-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.selector-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.modal-footer-clean {
+  padding: var(--space-8) var(--space-10) var(--space-10);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+}
+
+.date-range-info {
+  flex: 1;
+}
+
+.range-text {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 8px;
@@ -769,11 +979,14 @@ button:focus-visible {
 .diary-view {
   display: flex;
   flex-direction: column;
-  height: 100vh; /* exact viewport height */
+  height: 100%; /* Use 100% to fit within parent container */
   width: 100%; /* avoid 100vw causing unintended horizontal overflow */
   max-width: none;
   overflow: hidden; /* Contain overflow; inner content scrolls */
   flex-shrink: 0; /* Prevent shrinking */
+  /* Ensure flex children can shrink to allow proper scrolling */
+  min-width: 0;
+  min-height: 0;
   padding-top: calc(var(--app-header-h) + var(--diary-toolbar-h)); /* Reserve space for fixed bars */
 }
 
@@ -782,9 +995,9 @@ button:focus-visible {
 
 /* Diary toolbar: compact, flush under 48px header */
 .diary-toolbar {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   padding: 8px 16px; /* tighter, equal vertical inset */
   height: var(--diary-toolbar-h);
   background: var(--bg-translucent);
@@ -799,89 +1012,180 @@ button:focus-visible {
   width: 100%; /* Ensure full width */
   flex-shrink: 0; /* Prevent shrinking */
 }
-.diary-toolbar .toolbar-left,
+.diary-toolbar .toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6); /* Consistent with header spacing */
+  justify-self: start;
+}
+
 .diary-toolbar .toolbar-right {
   display: flex;
   align-items: center;
   gap: var(--space-6); /* Consistent with header spacing */
+  justify-self: end;
+}
+
+/* Year Progress Bar */
+.year-progress-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 320px;
+  justify-self: center;
+}
+
+.year-progress-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--border-subtle);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.year-progress-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: var(--radius-full);
+  transition: width 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.year-progress-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 50px;
+  text-align: right;
+}
+
+.year-progress-year {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 30px;
 }
 
 /* Months as columns */
 .diary-content {
   flex: 1;
-  /* inner scroll container shows the only scrollbars */
-  overflow: auto;
-  scrollbar-gutter: stable both-edges;
+  display: flex;
+  flex-direction: column;
+  /* Pin to viewport so scrollbars are at the window edge */
+  position: fixed;
+  top: calc(var(--app-header-h) + var(--diary-toolbar-h));
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Own both scroll directions so the vertical bar is at viewport edge */
+  overflow-y: auto;
+  overflow-x: auto;
+  /* Avoid nested scroll containers taking over; common flex fix */
+  min-height: 0;
+  min-width: 0;
   background: var(--bg-canvas);
 }
 
-/* Make diary scrollbars clearly visible (both axes) */
-/* Window-level scrollbars already styled below; keep styles minimal here */
+.diary-scroll-container {
+  flex: 1;
+  width: 100vw;
+  /* Let parent handle both scroll directions to avoid nested scrollbars */
+  overflow: visible;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-default) transparent;
+}
+
+.diary-scroll-container::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.diary-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.diary-scroll-container::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 4px;
+}
+
+.diary-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
 
 .diary-months-columns {
   display: flex;
   gap: var(--space-8);
   padding: var(--space-8) var(--space-12) var(--space-16);
-  /* allow horizontal overflow to create a window-level scrollbar */
-  overflow: visible;
   height: max-content;
-  min-width: max-content; /* ensure horizontal overflow when columns exceed viewport */
-  scrollbar-width: thin; /* Firefox thin scrollbar */
-  scrollbar-color: var(--border-default) transparent; /* Firefox scrollbar styling */
-}
-
-/* Webkit browsers scrollbar styling */
-.diary-months-columns::-webkit-scrollbar {
-  height: 8px; /* Horizontal scrollbar height */
-}
-
-.diary-months-columns::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.diary-months-columns::-webkit-scrollbar-thumb {
-  background: var(--border-default);
-  border-radius: 4px;
-}
-
-.diary-months-columns::-webkit-scrollbar-thumb:hover {
-  background: var(--border-strong);
+  /* grow to content so we get a horizontal scrollbar when needed */
+  width: max-content;
+  min-width: max-content;
 }
 
 .month-col {
   width: 240px; /* Denser columns */
   display: flex;
   flex-direction: column;
-  gap: var(--space-4); /* Consistent spacing */
   flex-shrink: 0; /* Prevent columns from shrinking */
   overflow: visible; /* Allow content to expand naturally */
 }
 
 .month-col .month-header {
-  position: static; /* Changed from sticky to static */
-  padding: var(--space-2) 0; /* tighter */
-  margin-bottom: var(--space-3); /* tighter */
+  position: relative; /* So z-index applies */
+  padding: var(--space-3) 0; /* tighter */
   background: transparent; /* Remove background */
-  border-bottom: 1px solid var(--border-subtle);
   border-radius: 0;
+  z-index: 1; /* Lower than .month-days */
 }
 
 .month-title {
   color: var(--text-primary);
+  padding-bottom: var(--space-4);
   font-weight: 600;
   letter-spacing: -0.01em;
   font-size: 14px;
   line-height: 1.2;
+  text-align: center;
 }
 
-.month-days {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4); /* Spacing between cards */
-  overflow-y: visible; /* No individual scrolling */
-  overflow-x: hidden; /* Prevent horizontal overflow */
-  max-height: none; /* Remove height restriction */
-}
+  .month-days {
+    display: grid;
+    gap: 6px;
+    border-radius: 20px;
+    background: var(--surface-secondary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    position: relative;
+  }
+
+  .week-separator {
+    grid-column: 1 / -1; /* Span full width */
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    height: 1px;
+  }
+  
+  .week-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border-subtle);
+  }
+  
+  .week-indicator {
+    margin: 0 12px;
+    background: transparent;
+    padding: 0;
+    border: none;
+  }
+  
+  .week-text {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    letter-spacing: 0.05em;
+  }
 
 /* Compact scale ~15–20% smaller on diary */
 .diary-view { font-size: 0.875rem; }
@@ -930,12 +1234,15 @@ button:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-1) var(--space-3);
+  padding: var(--space-2) var(--space-4);
   background: transparent;
   border-radius: var(--radius-full);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
   transition: all 140ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  height: 32px;
 }
 .edit-past-button:hover {
   color: var(--text-primary);
@@ -1106,27 +1413,7 @@ button:focus-visible {
   letter-spacing: 0.01em;
 }
 
-.edit-past-button {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-full);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.8);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 13px;
-  font-weight: 500;
-}
-.edit-past-button:hover {
-  color: rgba(255, 255, 255, 1);
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
-}
+
 
 /* Redesigned Edit Past pill */
 .edit-past-button {
@@ -1196,17 +1483,6 @@ button:focus-visible {
 .day-name { font-size: 14px; }
 .current-year { font-size: 13px; }
 
-/* Legacy diary months (keeping for compatibility) */
-.diary-months {
-  display: flex;
-  flex-direction: column;
-  padding: var(--space-8) var(--space-12);
-  overflow-y: auto;
-  height: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
 .month-section {
   display: flex;
   flex-direction: column;
@@ -1214,19 +1490,19 @@ button:focus-visible {
   margin-bottom: var(--space-12);
 }
 
-/* Legacy month header styles - consolidated above */
-
-.month-title {
-  margin: 0;
-  color: var(--text-primary);
-  font-weight: 600;
-  letter-spacing: -0.005em;
-}
-
 .month-entries {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: var(--space-8);
+}
+
+.month-col .diary-card {
+  position: relative;    /* already true in your CSS */
+  z-index: 1;
+}
+
+.month-col .diary-card:hover {
+  z-index: 3;            /* no need for 999 */
 }
 
 /* Dense-Soft Diary Card Styles */
@@ -1244,6 +1520,7 @@ button:focus-visible {
   font-size: 13px; /* slightly larger base */
   backdrop-filter: saturate(180%) blur(12px);
   -webkit-backdrop-filter: saturate(180%) blur(12px);
+  z-index: 0; /* Base level */
 }
 
 .diary-card:hover {
@@ -1251,6 +1528,7 @@ button:focus-visible {
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px); /* Less dramatic lift */
   background: var(--bg-hover);
+  z-index: 1; /* Elevated on hover */
 }
 
 .diary-card.is-today {
@@ -1266,12 +1544,12 @@ button:focus-visible {
 }
 
 /* Professional color accents */
-.diary-card.c-red { background: color-mix(in oklab, #EF4444 12%, var(--bg-surface)); border-color: rgba(239, 68, 68, 0.25); }
-.diary-card.c-red:hover { background: color-mix(in oklab, #EF4444 18%, var(--bg-surface)); border-color: rgba(239, 68, 68, 0.4); }
-.diary-card.c-yellow { background: color-mix(in oklab, #F59E0B 12%, var(--bg-surface)); border-color: rgba(245, 158, 11, 0.25); }
-.diary-card.c-yellow:hover { background: color-mix(in oklab, #F59E0B 18%, var(--bg-surface)); border-color: rgba(245, 158, 11, 0.4); }
-.diary-card.c-green { background: color-mix(in oklab, #10B981 12%, var(--bg-surface)); border-color: rgba(16, 185, 129, 0.25); }
-.diary-card.c-green:hover { background: color-mix(in oklab, #10B981 18%, var(--bg-surface)); border-color: rgba(16, 185, 129, 0.4); }
+.diary-card.c-red { background: color-mix(in oklab, #EF4444 18%, var(--bg-surface)); border-color: rgba(239, 68, 68, 0.35); }
+.diary-card.c-red:hover { background: color-mix(in oklab, #EF4444 24%, var(--bg-surface)); border-color: rgba(239, 68, 68, 0.5); }
+.diary-card.c-yellow { background: color-mix(in oklab, #F59E0B 18%, var(--bg-surface)); border-color: rgba(245, 158, 11, 0.35); }
+.diary-card.c-yellow:hover { background: color-mix(in oklab, #F59E0B 24%, var(--bg-surface)); border-color: rgba(245, 158, 11, 0.5); }
+.diary-card.c-green { background: color-mix(in oklab, #10B981 18%, var(--bg-surface)); border-color: rgba(16, 185, 129, 0.35); }
+.diary-card.c-green:hover { background: color-mix(in oklab, #10B981 24%, var(--bg-surface)); border-color: rgba(16, 185, 129, 0.5); }
 
 .card-header {
   display: flex;
@@ -1280,6 +1558,20 @@ button:focus-visible {
   margin-bottom: var(--space-2);
 }
 .card-header.micro { margin-bottom: var(--space-1); align-items: center; min-height: 20px; }
+
+.card-header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: right;
+}
+
+.card-header-right .day-name {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
 
 .date-section {
   display: flex;
@@ -1531,15 +1823,167 @@ button:focus-visible {
   letter-spacing: 0.01em;
 }
 
-/* Goal View Styles */
-.goal-view {
+/* Habit View Styles - Dense-Soft Design Philosophy */
+.habit-view {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: var(--space-4);
+  width: 100%;
+  max-width: none;
+  overflow: hidden;
+  flex-shrink: 0;
+  min-width: 0;
+  min-height: 0;
+  padding-top: calc(var(--app-header-h) + var(--habit-toolbar-h));
 }
 
-.goal-nav {
+/* Professional Habit Toolbar */
+.habit-toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 8px 16px;
+  height: var(--habit-toolbar-h, 48px);
+  background: var(--bg-translucent);
+  position: fixed;
+  top: var(--app-header-h);
+  left: 0;
+  right: 0;
+  z-index: 90;
+  border-bottom: 1px solid var(--border-subtle);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.habit-toolbar .toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  justify-self: start;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.habit-toolbar .toolbar-center {
+  display: flex;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.habit-toolbar .toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  justify-self: end;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+/* Habit Content Area */
+.habit-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--app-header-h) - var(--habit-toolbar-h, 48px));
+  overflow: visible;
+  background: var(--bg-canvas);
+  width: 100vw;
+  min-width: 0;
+  min-height: 0;
+}
+
+.habit-scroll-container {
+  flex: 1 1 auto;
+  width: 100%;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-default) transparent;
+  box-sizing: border-box;
+}
+
+/* Habit Stats Overview */
+.habit-stats-overview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.habit-counter {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  background: color-mix(in oklab, var(--bg-elevated) 80%, transparent);
+  border-radius: var(--radius-3);
+  border: 1px solid var(--border-subtle);
+  min-width: 44px;
+}
+
+.counter-number {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.counter-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+
+/* Enhanced Add Habit Button */
+.add-habit-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--accent);
+  color: var(--text-inverse);
+  border-radius: var(--radius-full);
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 140ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  height: 32px;
+}
+
+.add-habit-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(99, 102, 241, 0.25);
+}
+
+/* Edit Habits button - matches Edit Past styling */
+.edit-habits-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 140ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  height: 32px;
+}
+
+.edit-habits-button:hover {
+  color: var(--text-primary);
+  background: color-mix(in oklab, var(--bg-elevated) 85%, transparent);
+  transform: translateY(-1px);
+}
+
+.habit-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1553,18 +1997,18 @@ button:focus-visible {
   padding: var(--space-4);
 }
 
-.goal-title {
+.habit-title {
   margin: 0;
   color: var(--text-primary);
 }
 
-.goal-actions {
+.habit-actions {
   display: flex;
   align-items: center;
   gap: var(--space-4);
 }
 
-.add-goal-button {
+.add-habit-button {
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -1576,7 +2020,7 @@ button:focus-visible {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.add-goal-button:hover {
+.add-habit-button:hover {
   background: var(--accent-hover);
   transform: translateY(-1px);
 }
@@ -1688,7 +2132,7 @@ button:focus-visible {
   color: var(--accent);
 }
 
-.goal-actions {
+.habit-actions {
   display: flex;
   gap: var(--space-1);
   flex-shrink: 0;
@@ -1732,149 +2176,285 @@ button:focus-visible {
   color: var(--green);
 }
 
-/* Year view calendar grid */
-.goal-calendar {
-  flex: 1;
+/* Habit calendar uses edge-to-edge 4-column grid */
+.habit-calendar {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-6);
-  overflow-y: auto;
-  padding: var(--space-2);
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: var(--space-12);
+  row-gap: var(--space-8);
+  padding: var(--space-12) var(--space-12);
+  align-items: start;
+  min-width: 0;
+  width: 100%;
+  /* box-sizing: border-box; */
+}
+
+@media (max-width: 1200px) {
+  .habit-calendar { 
+    grid-template-columns: repeat(3, 1fr); 
+    column-gap: var(--space-8);
+    row-gap: var(--space-6);
+  }
+}
+@media (max-width: 768px) {
+  .habit-calendar { 
+    grid-template-columns: repeat(2, 1fr); 
+    column-gap: var(--space-6);
+    row-gap: var(--space-4);
+    padding: var(--space-4) var(--space-6);
+  }
 }
 
 .calendar-month {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-4);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  transition: all 200ms cubic-bezier(0.23, 1, 0.320, 1);
+  width: 100%;
+  min-width: 0; /* allow shrinking within grid track */
+  max-width: none;
 }
 
 .calendar-month:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+  transform: none;
 }
 
-.calendar-header {
-  padding: var(--space-4);
-  background: var(--border-subtle);
-  border-bottom: 1px solid var(--border-default);
-  text-align: center;
+.month-header {
+  padding: 0 0 var(--space-4) 0;
+  text-align: left;
+  background: transparent;
 }
 
-.calendar-title {
+.month-title {
   margin: 0;
   color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  padding: var(--space-3);
-  gap: var(--space-1);
+  padding: 0;
+  gap: var(--space-3);
+}
+
+.week-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: var(--space-1);
 }
 
 .day-cell {
-  aspect-ratio: 1;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-2);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: var(--space-1);
+  padding: 2px;
   position: relative;
-  background: var(--bg-canvas);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  min-height: 48px;
+  cursor: default;
+  min-height: 0;
+  /* Ensure each grid cell fully claims its track area */
+  height: 100%;
 }
 
-/* Completion bar inside day cells */
+.day-cell-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* let child fill width */
+  justify-content: center;
+  /* Base height so empty days are consistent */
+  /* Grow only when this day has dot rows; 3 dots per row */
+  min-height: calc(42px + (var(--dot-rows, 0) * 6px));
+  height: 100%;
+}
+
+.day-cell.empty {
+  cursor: default;
+}
+
+.day-cell.empty:hover {
+  background: transparent;
+  transform: none;
+}
+
+/* Remove old hover states that are now handled by day-badge-container */
+
+/* Completion bar - hidden in new design */
 .completion-bar {
-  position: absolute;
-  left: 2px;
-  right: 2px;
-  bottom: 2px;
-  height: 3px;
-  background: var(--border-subtle);
-  border-radius: var(--radius-full);
-  overflow: hidden;
+  display: none;
 }
 
 .completion-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent) 0%, var(--green) 100%);
-  border-radius: var(--radius-full);
-  transition: width 160ms ease;
+  background: #15803d;
+  border-radius: 0;
+  transition: width 250ms cubic-bezier(0.23, 1, 0.320, 1);
 }
 
-.day-cell.today {
-  border-color: var(--accent);
-  background: var(--accent-light);
+/* Day badge container - holds day number and dots with grey background */
+.day-badge-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3);
+  /* Base neutral background for days with no state */
+  background: color-mix(in oklab, var(--bg-elevated) 20%, transparent);
+  border: 1px solid transparent;
+  border-radius: var(--radius-3);
+  gap: var(--space-2);
+  transition: all 180ms cubic-bezier(0.23, 1, 0.320, 1);
+  min-width: 40px;
+  width: 100%;
+  /* Make the badge fill the cell’s inner height while keeping compact base */
+  flex: 1 1 auto;
 }
 
-.day-cell.all-done {
-  background: var(--green-light);
-  border-color: var(--green);
+/* Completion states for day-badge-container */
+.day-badge-container.today {
+  /* Use same accent as outer state rather than gray */
+  background: color-mix(in oklab, #7C3AED 18%, var(--bg-surface));
+  border-color: color-mix(in oklab, #7C3AED 50%, transparent);
 }
 
-.day-cell.future.empty {
+.day-badge-container.all-done {
+  /* Replace gray with the green used on the outer parent */
+  background: color-mix(in oklab, var(--green) 18%, var(--bg-surface));
+  border-color: color-mix(in oklab, var(--green) 55%, transparent);
+}
+
+/* New state: no habits completed -> red */
+.day-badge-container.none-completed {
+  background: color-mix(in oklab, var(--red) 18%, var(--bg-surface));
+  border-color: color-mix(in oklab, var(--red) 55%, transparent);
+}
+
+.day-badge-container.partial-completion {
+  background: color-mix(in oklab, var(--yellow) 16%, var(--bg-surface));
+  border-color: color-mix(in oklab, var(--yellow) 50%, transparent);
+}
+
+.day-badge-container.future.empty {
   opacity: 0.3;
-  background: transparent;
+  background: rgba(30, 41, 59, 0.02);
 }
 
-.day-cell.future {
-  opacity: 0.5;
+/* Hover states */
+.day-cell:hover .day-badge-container {
+  background: color-mix(in oklab, var(--bg-elevated) 28%, transparent);
 }
 
+.day-cell.today:hover .day-badge-container.today {
+  background: color-mix(in oklab, #7C3AED 26%, var(--bg-surface));
+  border-color: color-mix(in oklab, #7C3AED 65%, transparent);
+}
+
+.day-cell.all-done:hover .day-badge-container.all-done {
+  background: color-mix(in oklab, var(--green) 26%, var(--bg-surface));
+  border-color: color-mix(in oklab, var(--green) 65%, transparent);
+}
+
+.day-cell.partial-completion:hover .day-badge-container.partial-completion {
+  background: color-mix(in oklab, var(--yellow) 22%, var(--bg-surface));
+  border-color: color-mix(in oklab, var(--yellow) 60%, transparent);
+}
+
+.day-cell.none-completed:hover .day-badge-container.none-completed {
+  background: color-mix(in oklab, var(--red) 24%, var(--bg-surface));
+  border-color: color-mix(in oklab, var(--red) 65%, transparent);
+}
+
+/* Future states now handled by day-badge-container */
+
+/* Day number in calendar cells should be text-only inside the badge */
 .day-number {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--text-secondary);
   line-height: 1;
-  margin-bottom: var(--space-1);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
 }
 
-.day-cell.today .day-number {
-  color: var(--accent);
+/* Override the earlier diary .day-number box when used in the habit calendar */
+.day-badge-container .day-number {
+  width: auto;
+  height: auto;
+  padding: 0;
+  background: transparent;
+  border: none;
+  display: inline;
+}
+
+/* Day number color is consistent across states in habit calendar */
+.day-cell.today .day-number,
+.day-cell.all-done .day-number,
+.day-cell.partial-completion .day-number,
+.day-cell.none-completed .day-number,
+.day-cell.future .day-number {
+  color: var(--text-secondary);
   font-weight: 600;
 }
 
-.goal-dots {
+/* day-cell-main no longer needed - replaced by day-badge-container */
+
+.habit-dots-container {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 2px;
-  justify-content: center;
+  width: 100%;
+  flex-shrink: 0;
   align-items: center;
-  flex: 1;
+  position: relative;
+  z-index: 2;
+  background: transparent;
 }
 
-.goal-dot {
-  width: 8px;
+.habit-dots-row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
   height: 8px;
-  border-radius: var(--radius-full);
+  padding: 2px 0;
+  background: transparent;
+  /* border: 1px solid red; */
+}
+
+.habit-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
   border: none;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  background: var(--border-default);
+  cursor: default;
+  pointer-events: none;
+  transition: all 200ms cubic-bezier(0.23, 1, 0.320, 1);
+  background: var(--gray-400);
+  flex-shrink: 0;
 }
 
-.goal-dot:not(:disabled):hover {
-  transform: scale(1.2);
-}
+/* dots are informational only; no hover scaling */
 
-.goal-dot.completed {
+.habit-dot.completed {
   background: var(--green);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.2);
 }
 
-.goal-dot.missed {
+.habit-dot.missed {
   background: var(--red);
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.2);
 }
 
-.goal-dot:disabled {
+.habit-dot:disabled {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 .completion-effect {
@@ -1883,13 +2463,22 @@ button:focus-visible {
   right: 2px;
   font-size: 10px;
   line-height: 1;
+  opacity: 0.9;
+  animation: gentleFloat 800ms cubic-bezier(0.23, 1, 0.320, 1);
 }
 
-.goal-modal {
+@keyframes gentleFloat {
+  0% { opacity: 0; transform: translateY(4px) scale(0.8); }
+  50% { opacity: 1; transform: translateY(-2px) scale(1.1); }
+  100% { opacity: 0.9; transform: translateY(0) scale(1); }
+}
+
+/* Redesigned Habit Modal - matches diary modal styling */
+.habit-modal-redesign {
   background: var(--bg-surface);
   border-radius: var(--radius-4);
   overflow: hidden;
-  max-width: 500px;
+  max-width: 480px;
   width: 90vw;
   max-height: 80vh;
   display: flex;
@@ -1897,7 +2486,81 @@ button:focus-visible {
   box-shadow: var(--shadow-xl);
 }
 
-.goal-modal .modal-content {
+.habit-form-section {
+  padding: var(--space-10);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.habit-input,
+.habit-textarea {
+  width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: var(--space-4);
+  color: var(--text-primary);
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 400;
+  transition: border-color 140ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.habit-input:focus,
+.habit-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.habit-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.cancel-button-clean,
+.save-button-clean {
+  padding: var(--space-3) var(--space-6);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 140ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  height: 44px;
+}
+
+.cancel-button-clean {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+.cancel-button-clean:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.save-button-clean {
+  background: linear-gradient(135deg, var(--accent), #4F46E5);
+  color: var(--text-inverse);
+  border: none;
+  font-weight: 600;
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+}
+
+.save-button-clean:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px -1px rgba(79, 70, 229, 0.4);
+}
+
+.save-button-clean:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.habit-modal .modal-content {
   padding: var(--space-6) var(--space-8);
 }
 
@@ -1942,7 +2605,7 @@ button:focus-visible {
   min-height: 80px;
 }
 
-.goal-modal .modal-footer {
+.habit-modal .modal-footer {
   padding: var(--space-6) var(--space-8);
   border-top: 1px solid var(--border-subtle);
   display: flex;
@@ -1965,11 +2628,6 @@ button:focus-visible {
 }
 
 /* Responsive adjustments */
-@media (max-width: 1200px) {
-  .goal-calendar {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
 
 /* Professional dark theme enhancements */
 [data-mantine-color-scheme='dark'] {
@@ -1978,7 +2636,8 @@ button:focus-visible {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
   
-  .diary-toolbar {
+  .diary-toolbar,
+  .habit-toolbar {
     background: rgba(28, 28, 30, 0.8);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
@@ -2004,6 +2663,17 @@ button:focus-visible {
   }
   
   .edit-past-button:hover {
+    color: rgba(255, 255, 255, 1);
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .edit-habits-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .edit-habits-button:hover {
     color: rgba(255, 255, 255, 1);
     background: rgba(255, 255, 255, 0.15);
   }
@@ -2065,11 +2735,285 @@ button:focus-visible {
     padding-right: 0;
   }
   
-  .goal-calendar {
-    grid-template-columns: 1fr;
+  .habit-calendar {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    padding: var(--space-4);
   }
   
   .month-entries {
     grid-template-columns: 1fr;
   }
+}
+
+/* Habits Manager Modal - matches diary modal styling */
+.habits-manager-modal {
+  background: var(--bg-surface);
+  border-radius: var(--radius-4);
+  overflow: hidden;
+  max-width: 600px;
+  width: 90vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-xl);
+}
+
+.modal-header-clean {
+  padding: var(--space-8) var(--space-8) var(--space-6);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-8);
+}
+
+.close-button {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-2);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 140ms ease;
+  flex-shrink: 0;
+}
+
+.close-button:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.habits-content {
+  flex: 1;
+  padding: var(--space-8);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.new-habit-section {
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: var(--space-6);
+}
+
+.new-habit-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  background: var(--accent);
+  color: var(--text-inverse);
+  border-radius: var(--radius-3);
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 140ms ease;
+}
+
+.new-habit-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.habits-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.section-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.section-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: none;
+  padding: var(--space-2) 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+}
+
+.section-toggle:hover {
+  color: var(--accent);
+}
+
+.habits-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.habits-list.archived {
+  opacity: 0.7;
+}
+
+.habit-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-3);
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.habit-item:hover {
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-sm);
+}
+
+.habit-item.archived {
+  background: var(--bg-elevated);
+}
+
+.habit-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.habit-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.habit-details {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.empty-habits {
+  padding: var(--space-8);
+  text-align: center;
+  background: var(--bg-surface);
+  border-radius: var(--radius-3);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+/* Day Habits Modal - matches diary modal styling */
+.day-habits-modal {
+  background: var(--bg-surface);
+  border-radius: var(--radius-4);
+  overflow: hidden;
+  max-width: 480px;
+  width: 90vw;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-xl);
+}
+
+.day-number-large {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  line-height: 1;
+}
+
+.day-habits-content {
+  flex: 1;
+  padding: var(--space-8);
+  overflow-y: auto;
+}
+
+.habits-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.habit-checkbox-item {
+  display: flex;
+  align-items: flex-start;
+  padding: var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-3);
+  transition: all 140ms ease;
+}
+
+.habit-checkbox-item:hover {
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-sm);
+}
+
+.habit-checkbox-item.completed {
+  background: var(--green-bg);
+  border-color: var(--green);
+}
+
+.habit-checkbox-item label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  cursor: pointer;
+  width: 100%;
+}
+
+.habit-checkbox-item input[type="checkbox"] {
+  display: none;
+}
+
+.checkmark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-2);
+  background: var(--bg-canvas);
+  position: relative;
+  transition: all 140ms ease;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.habit-checkbox-item.completed .checkmark {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.habit-checkbox-item.completed .checkmark::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.habit-label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.habit-checkbox-item .habit-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.habit-description {
+  font-size: 13px;
+  color: var(--text-secondary);
 }
